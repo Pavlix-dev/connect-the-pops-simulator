@@ -1,52 +1,75 @@
 from Tree import Tree
+from Node import Node
 import random
 
 
 class Board:
-    boardSize = 0
+    board_size = 0
     board = []
 
-    def __init__(self, boardSize):
-        self.boardSize = boardSize
+    def __init__(self, board_size):
+        self.board_size = board_size
 
-        for i in range(boardSize):
+        for i in range(board_size):
             self.board.insert(i, [])
-            for j in range(boardSize):
+            for j in range(board_size):
                 self.board[i].append(random.randint(1, 6))
 
     def print(self):
-        cellSize = 4  # even numbers only
+        cell_size = 4  # even numbers only
 
         for line in self.board:
-            print('\n' + ('-' * cellSize + '-') * self.boardSize + '-')
+            print('\n' + ('-' * cell_size + '-') * self.board_size + '-')
 
             for element in line:
-                elementStr = str(2 ** element)
-                leftSpaces = ' ' * ((cellSize - len(elementStr)) // 2)
-                rightSpaces = ' ' * (((cellSize - len(elementStr)) // 2) + len(elementStr) % 2)
-                print('|' + leftSpaces + elementStr + rightSpaces, end='')
+                element_str = str(2 ** element)
+                left_spaces = ' ' * ((cell_size - len(element_str)) // 2)
+                right_spaces = ' ' * (((cell_size - len(element_str)) // 2) + len(element_str) % 2)
+                print('|' + left_spaces + element_str + right_spaces, end='')
 
             print('|', end='')
 
-        print('\n' + ('-' * cellSize + '-') * self.boardSize + '-')
+        print('\n' + ('-' * cell_size + '-') * self.board_size + '-')
 
-    def findBestPathForCell(self, cell):
+    def find_best_path_for_cell(self, x, y):
         tree = Tree()
 
-        self.addNodes(tree, self.board[cell[0]][cell[1]], cell)
+        tree.value = self.board[x][y]
+        tree.root = self.add_node(tree, x, y)
 
-    def addNodes(self, tree, value, address):
-        currentValue = self.board[address[0]][address[1]]
+        print(tree.get_longest_path_length())
+        print(tree.longestPath)
 
-        if not 0 <= address[0] < self.boardSize:
+    def add_node(self, tree, x, y, parent=None):
+        if not 0 <= x < self.board_size:
             return None
-        if not 0 <= address[1] < self.boardSize:
+        if not 0 <= y < self.board_size:
             return None
 
-        if currentValue is not value:
+        if self.board[x][y] is not tree.value:
             return None
 
-        tree.value = currentValue
-        tree.address = address
+        node = Node()
 
-        tree.top = self.addNodes()
+        if parent is not None:
+            if (x, y) in parent.path:
+                return None
+
+            node.path = parent.path.copy()
+
+        node.path.append((x, y))
+
+        if len(tree.longestPath) < len(node.path):
+            tree.longestPath = node.path
+
+        node.top = self.add_node(tree, x, y-1, node)
+        node.bottom = self.add_node(tree, x, y+1, node)
+        node.left = self.add_node(tree, x-1, y, node)
+        node.right = self.add_node(tree, x+1, y, node)
+
+        node.leftTop = self.add_node(tree, x-1, y-1, node)
+        node.leftBottom = self.add_node(tree, x-1, y+1, node)
+        node.rightTop = self.add_node(tree, x+1, y-1, node)
+        node.rightBottom = self.add_node(tree, x+1, y+1, node)
+
+        return node

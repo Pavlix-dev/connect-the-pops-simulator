@@ -1,13 +1,8 @@
 class Tree:
-    parent = None
-    address = (0, 0)
-    value = 0
+    root = None
 
-    left = None
-    right = None
-    top = None
-    bottom = None
-    leftTop = None
-    rightTop = None
-    leftBottom = None
-    rightBottom = None
+    value = 0
+    longestPath = []
+
+    def get_longest_path_length(self):
+        return len(self.longestPath) - 1
