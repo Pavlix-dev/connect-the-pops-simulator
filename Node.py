@@ -9,3 +9,6 @@ class Node:
     rightTop = None
     leftBottom = None
     rightBottom = None
+
+    def __init__(self):
+        self.path = []
